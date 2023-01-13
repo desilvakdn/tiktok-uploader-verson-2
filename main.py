@@ -5,10 +5,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os,time,sys,json
+import shutil
 
 dir_path = '.\\videos'
 count = 0
 lst = []
+how_many_videos = 4
 
 for path in os.listdir(dir_path):
     if os.path.isfile(os.path.join(dir_path, path)):
@@ -111,22 +113,28 @@ def upload_module(file_path):
             except:
                 time.sleep(0.5)
 
-def checkuploaded():
+def checkuploaded(file_path):
     try:
         v = driver.find_element(By.CLASS_NAME,"tiktok-modal__modal-title").text
         if "uploaded" in v.lower():
             driver.find_element(By.CLASS_NAME,"tiktok-modal__modal-button").click()
+
+            in_file = file_path
+            out_file = os.path.abspath(os.path.join(".\\uploaded",os.path.basename(in_file)))
+            shutil.move(in_file,out_file)
+
+            print("Finished")
             return
     except:
         time.sleep(0.5)
 
-for i in lst:
+for i in lst[:how_many_videos]:
     file_ = os.path.abspath(i)
     upload_module(file_)
     caption(os.path.basename(file_).replace(".mp4",""))
     time.sleep(1)
     copyrightcheck()
-    checkuploaded()
+    checkuploaded(file_)
     time.sleep(0.5)
 
 print("All Done Successfully")
